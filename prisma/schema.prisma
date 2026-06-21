@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model UserSetting {
+  id            String   @id @default(cuid())
+  openaiApiKey  String?
+  openaiBaseUrl String?
+  openaiModel   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Client {
+  id                     String     @id @default(cuid())
+  companyName            String
+  bossName               String?
+  phone                  String?
+  wechat                 String?
+  city                   String?
+  industry               String?
+  revenue                String?
+  profit                 String?
+  cashflow               String?
+  fixedAssets            String?
+  debt                   String?
+  receivables            String?
+  employeeCount          String?
+  customerStructure      String?
+  bossDemand             String?
+  financingNeed          Boolean    @default(false)
+  maNeed                 Boolean    @default(false)
+  summitInterest         Boolean    @default(false)
+  paidAssessmentInterest Boolean    @default(false)
+  stage                  String?
+  level                  String     @default("C")
+  closeProbability       Int        @default(20)
+  notes                  String?
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
+  followUps              FollowUp[]
+  agentRuns              AgentRun[]
+}
+
+model FollowUp {
+  id           String   @id @default(cuid())
+  clientId     String
+  client       Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  content      String
+  nextAction   String?
+  followUpDate DateTime
+  status       String   @default("未跟进")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model AgentRun {
+  id        String   @id @default(cuid())
+  clientId  String?
+  client    Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  agentType String
+  input     String
+  output    String
+  createdAt DateTime @default(now())
+}
+
+model KnowledgeItem {
+  id        String   @id @default(cuid())
+  title     String
+  category  String?
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContentItem {
+  id          String   @id @default(cuid())
+  title       String
+  contentType String
+  input       String
+  output      String
+  createdAt   DateTime @default(now())
+}

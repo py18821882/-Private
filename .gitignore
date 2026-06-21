@@ -1,0 +1,9 @@
+node_modules
+.next
+.npm-cache
+.env
+localtunnel.*.log
+*.db
+*.db-journal
+prisma/dev.db
+prisma/dev.db-journal
