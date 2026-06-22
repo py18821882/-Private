@@ -3,6 +3,7 @@ node_modules
 .npm-cache
 .env
 localtunnel.*.log
+*.zip
 *.db
 *.db-journal
 prisma/dev.db
