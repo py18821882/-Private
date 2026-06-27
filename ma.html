@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>企业并购价值初筛系统</title>
+  <link rel="stylesheet" href="./ma.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 页面容器 -->
+  </div>
+  
+  <script>
+    // ==================== 数据配置 ====================
+    const QUESTIONS = [
+      {
+        id: 1,
+        title: '企业所属行业是？',
+        options: [
+          { text: '制造业', score: 4 },
+          { text: '农业食品', score: 3 },
+          { text: '新能源', score: 5 },
+          { text: '新材料', score: 5 },
+          { text: '供应链物流', score: 3 },
+          { text: '建筑工程', score: 3 },
+          { text: '工业服务', score: 3 },
+          { text: '其他行业', score: 2 }
+        ]
+      },
+      {
+        id: 2,
+        title: '企业近一年营收规模？',
+        options: [
+          { text: '500万以下', score: 0 },
+          { text: '500万-2000万', score: 1 },
+          { text: '2000万-5000万', score: 2 },
+          { text: '5000万-1亿', score: 4 },
+          { text: '1亿以上', score: 5 }
+        ]
+      },
+      {
+        id: 3,
+        title: '企业近一年净利润水平？',
+        options: [
+          { text: '亏损', score: 0 },
+          { text: '100万以内', score: 1 },
+          { text: '100万-300万', score: 2 },
+          { text: '300万-1000万', score: 4 },
+          { text: '1000万以上', score: 5 }
+        ]
+      },
+      {
+        id: 4,
+        title: '企业当前负债情况？',
+        options: [
+          { text: '无明显负债', score: 5 },
+          { text: '轻度负债', score: 4 },
+          { text: '中度负债', score: 2 },
+          { text: '负债压力较大', score: 0 }
+        ]
+      },
+      {
+        id: 5,
+        title: '企业是否有固定资产？',
+        options: [
+          { text: '无固定资产', score: 0 },
+          { text: '500万以内', score: 1 },
+          { text: '500万-2000万', score: 3 },
+          { text: '2000万-1亿', score: 4 },
+          { text: '1亿以上', score: 5 }
+        ]
+      },
+      {
+        id: 6,
+        title: '企业现金流情况如何？',
+        options: [
+          { text: '现金流紧张', score: 0 },
+          { text: '基本维持', score: 2 },
+          { text: '较为稳定', score: 4 },
+          { text: '现金流充足', score: 5 }
+        ]
+      },
+      {
+        id: 7,
+        title: '企业应收账款情况？',
+        options: [
+          { text: '较少', score: 5 },
+          { text: '可控', score: 4 },
+          { text: '偏高', score: 2 },
+          { text: '压力较大', score: 0 }
+        ]
+      },
+      {
+        id: 8,
+        title: '客户结构是否稳定？',
+        options: [
+          { text: '客户不稳定', score: 0 },
+          { text: '有部分稳定客户', score: 2 },
+          { text: '有长期大客户', score: 4 },
+          { text: '有国央企、上市公司或大型客户', score: 5 }
+        ]
+      },
+      {
+        id: 9,
+        title: '企业核心优势是什么？',
+        options: [
+          { text: '技术优势', score: 4 },
+          { text: '资质优势', score: 4 },
+          { text: '渠道优势', score: 3 },
+          { text: '产能优势', score: 4 },
+          { text: '品牌优势', score: 3 },
+          { text: '客户资源', score: 3 },
+          { text: '区域市场', score: 2 },
+          { text: '暂不明确', score: 0 }
+        ]
+      },
+      {
+        id: 10,
+        title: '企业团队是否稳定？',
+        options: [
+          { text: '不稳定', score: 0 },
+          { text: '基本稳定', score: 2 },
+          { text: '核心团队稳定', score: 4 },
+          { text: '团队成熟且可复制', score: 5 }
+        ]
+      },
+      {
+        id: 11,
+        title: '企业股权结构是否清晰？',
+        options: [
+          { text: '非常清晰', score: 5 },
+          { text: '基本清晰', score: 4 },
+          { text: '存在部分分歧', score: 2 },
+          { text: '股东配合度不确定', score: 0 }
+        ]
+      },
+      {
+        id: 12,
+        title: '实际控制人是否愿意配合并购或股权交易？',
+        options: [
+          { text: '愿意', score: 5 },
+          { text: '可以沟通', score: 3 },
+          { text: '暂不确定', score: 1 },
+          { text: '不愿意', score: 0 }
+        ]
+      },
+      {
+        id: 13,
+        title: '老板当前主要诉求是什么？',
+        options: [
+          { text: '全资退出', score: 5 },
+          { text: '部分股权转让', score: 4 },
+          { text: '融资扩张', score: 3 },
+          { text: '引入国资或产业方', score: 4 },
+          { text: '被上市公司整合', score: 5 },
+          { text: '暂时了解', score: 1 }
+        ]
+      },
+      {
+        id: 14,
+        title: '企业是否愿意提供基础资料做进一步评估？',
+        options: [
+          { text: '愿意', score: 5 },
+          { text: '可以先了解', score: 3 },
+          { text: '暂不确定', score: 1 },
+          { text: '暂不愿意', score: 0 }
+        ]
+      },
+      {
+        id: 15,
+        title: '如果企业具备并购价值，是否愿意进入人工初评？',
+        options: [
+          { text: '愿意', score: 5 },
+          { text: '需要先沟通', score: 3 },
+          { text: '暂不确定', score: 1 }
+        ]
+      }
+    ];
+
+    // 评分标准
+    const GRADE_RULES = [
+      { grade: 'A', min: 60, title: '具备并购评估价值', color: '#00D4AA' },
+      { grade: 'B', min: 45, title: '具备产业整合潜力', color: '#4A90D9' },
+      { grade: 'C', min: 30, title: '具备融资或合作优化空间', color: '#FFA726' },
+      { grade: 'D', min: 0, title: '暂不适合直接推进并购', color: '#9E9E9E' }
+    ];
+
+    // ==================== 状态管理 ====================
+    let currentPage = 'home';
+    let answers = {};
+    let totalScore = 0;
+    let currentGrade = null;
+
+    // ==================== 渲染函数 ====================
+    function render() {
+      const app = document.getElementById('app');
+      
+      switch(currentPage) {
+        case 'home':
+          app.innerHTML = renderHome();
+          break;
+        case 'intro':
+          app.innerHTML = renderIntro();
+          break;
+        case 'question':
+          renderQuestion();
+          break;
+        case 'loading':
+          app.innerHTML = renderLoading();
+          startLoadingAnimation();
+          break;
+        case 'result':
+          app.innerHTML = renderResult();
+          break;
+        case 'submit':
+          app.innerHTML = renderSubmit();
+          break;
+        case 'success':
+          app.innerHTML = renderSuccess();
+          break;
+      }
+      
+      // 绑定事件
+      bindEvents();
+    }
+
+    // ==================== 首页 ====================
+    function renderHome() {
+      return `
+        <div class="page page-home">
+          <!-- 顶部背景 -->
+          <div class="hero-bg">
+            <div class="grid-lines"></div>
+            <div class="hero-content">
+              <div class="badge">并购价值评估系统</div>
+              <h1 class="main-title">企业并购价值<br>初筛系统</h1>
+              <p class="sub-title">3分钟判断您的企业是否具备被上市公司、产业资本、国资平台、并购基金关注的基础条件</p>
+            </div>
+            <div class="hero-bottom">
+              <svg viewBox="0 0 375 60" preserveAspectRatio="none">
+                <path d="M0 60 L0 30 Q50 0 100 30 Q150 60 200 30 Q250 0 300 30 Q350 60 375 30 L375 60 Z" fill="#0a0f1c"/>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- 核心文案 -->
+          <div class="core-content">
+            <p class="quote">"很多企业不是没有价值，而是没有被正确表达。"</p>
+            
+            <p class="desc">资本方真正关注的，不只是利润，而是行业位置、客户结构、资产承载、现金流质量、团队稳定性、股权清晰度和产业协同空间。</p>
+            
+            <p class="desc">通过本系统，您可以初步判断企业当前属于：</p>
+            
+            <!-- 企业类型 -->
+            <div class="type-list">
+              <div class="type-item">并购评估型</div>
+              <div class="type-item">产业整合型</div>
+              <div class="type-item">融资成长型</div>
+              <div class="type-item">资源合作型</div>
+              <div class="type-item">暂缓推进型</div>
+            </div>
+          </div>
+          
+          <!-- 按钮 -->
+          <div class="action-area">
+            <button class="btn-primary" data-action="start">
+              <span>立即开始企业并购测评</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+            <p class="disclaimer">本测评仅作为企业并购价值初步判断，不构成并购成功、融资成功或买方承诺。</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==================== 专业背书页 ====================
+    function renderIntro() {
+      return `
+        <div class="page page-intro">
+          <div class="page-header">
+            <button class="btn-back" data-action="back">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <h2>并购方通常关注什么样的企业？</h2>
+          </div>
+          
+          <div class="intro-content">
+            <div class="intro-list">
+              <div class="intro-item">
+                <span class="num">01</span>
+                <span class="text">有稳定现金流的企业</span>
+              </div>
+              <div class="intro-item">
+                <span class="num">02</span>
+                <span class="text">有核心客户或区域市场的企业</span>
+              </div>
+              <div class="intro-item">
+                <span class="num">03</span>
+                <span class="text">有技术、资质、渠道、产能优势的企业</span>
+              </div>
+              <div class="intro-item">
+                <span class="num">04</span>
+                <span class="text">有资产承载能力或产业协同价值的企业</span>
+              </div>
+              <div class="intro-item">
+                <span class="num">05</span>
+                <span class="text">股权结构清晰，实际控制人有明确合作意愿的企业</span>
+              </div>
+              <div class="intro-item">
+                <span class="num">06</span>
+                <span class="text">能够与上市公司、国资平台或产业资本形成协同的企业</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="action-area">
+            <button class="btn-primary" data-action="toQuestion">
+              <span>我想看看企业是否具备价值</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==================== 题目页 ====================
+    function renderQuestion() {
+      const questionIndex = Object.keys(answers).length;
+      const question = QUESTIONS[questionIndex];
+      const progress = ((questionIndex + 1) / QUESTIONS.length * 100).toFixed(0);
+      
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div class="page page-question">
+          <div class="page-header">
+            <button class="btn-back" data-action="backToIntro">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <div class="progress-info">
+              <span class="current">${questionIndex + 1}</span>/<span class="total">${QUESTIONS.length}</span>
+            </div>
+          </div>
+          
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${progress}%"></div>
+          </div>
+          
+          <div class="question-content">
+            <h2 class="question-title">${question.title}</h2>
+            
+            <div class="options-list">
+              ${question.options.map((opt, i) => `
+                <button class="option-btn" data-score="${opt.score}" data-index="${i}">
+                  <span class="option-text">${opt.text}</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+          
+          <div class="dimension-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 16v-4M12 8h.01"/>
+            </svg>
+            <span>资本维度评估中</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==================== 加载页 ====================
+    function renderLoading() {
+      return `
+        <div class="page page-loading">
+          <div class="loading-content">
+            <div class="loading-icon">
+              <div class="spinner"></div>
+            </div>
+            <h2>正在生成企业并购价值初评结果</h2>
+            
+            <div class="loading-steps">
+              <div class="step active" data-step="1">
+                <span class="step-icon">○</span>
+                <span class="step-text">正在分析行业位置</span>
+              </div>
+              <div class="step" data-step="2">
+                <span class="step-icon">○</span>
+                <span class="step-text">正在分析营收利润基础</span>
+              </div>
+              <div class="step" data-step="3">
+                <span class="step-icon">○</span>
+                <span class="step-text">正在分析资产负债结构</span>
+              </div>
+              <div class="step" data-step="4">
+                <span class="step-icon">○</span>
+                <span class="step-text">正在分析客户与现金流质量</span>
+              </div>
+              <div class="step" data-step="5">
+                <span class="step-icon">○</span>
+                <span class="step-text">正在分析产业协同空间</span>
+              </div>
+              <div class="step" data-step="6">
+                <span class="step-icon">○</span>
+                <span class="step-text">正在生成初步评估结果</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function startLoadingAnimation() {
+      const steps = document.querySelectorAll('.step');
+      let currentStep = 0;
+      
+      const interval = setInterval(() => {
+        if (currentStep < steps.length) {
+          steps[currentStep].classList.add('active');
+          currentStep++;
+        } else {
+          clearInterval(interval);
+          setTimeout(() => {
+            currentPage = 'result';
+            render();
+          }, 500);
+        }
+      }, 800);
+    }
+
+    // ==================== 结果页 ====================
+    function renderResult() {
+      // 计算总分
+      totalScore = Object.values(answers).reduce((sum, score) => sum + score, 0);
+      
+      // 确定等级
+      for (const rule of GRADE_RULES) {
+        if (totalScore >= rule.min) {
+          currentGrade = { ...rule, score: totalScore };
+          break;
+        }
+      }
+      
+      const gradeData = getGradeContent(currentGrade.grade);
+      
+      return `
+        <div class="page page-result">
+          <div class="result-header">
+            <div class="result-badge">企业并购价值初筛报告</div>
+            <div class="result-score">
+              <span class="score-num">${currentGrade.score}</span>
+              <span class="score-max">/75</span>
+            </div>
+            <div class="result-grade" style="color: ${currentGrade.color}">
+              <span class="grade-letter">${currentGrade.grade}</span>
+              <span class="grade-title">${currentGrade.title}</span>
+            </div>
+          </div>
+          
+          <div class="result-content">
+            <div class="result-desc">
+              <p>${gradeData.description}</p>
+            </div>
+            
+            <div class="result-suggestion">
+              <h4>评估结论</h4>
+              <p>${gradeData.conclusion}</p>
+            </div>
+            
+            <div class="result-action">
+              ${gradeData.action}
+            </div>
+          </div>
+          
+          <div class="result-footer">
+            <button class="btn-secondary" data-action="restart">
+              重新测评
+            </button>
+            <button class="btn-primary" data-action="toSubmit">
+              <span>${gradeData.buttonText}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+          
+          <p class="disclaimer">本评估结果仅供参考，最终以资料审核和尽调判断为准。</p>
+        </div>
+      `;
+    }
+
+    function getGradeContent(grade) {
+      const contents = {
+        'A': {
+          description: '根据您提交的信息，企业在营收基础、利润能力、客户结构、现金流质量、资产承载或产业协同方面，已经具备进一步并购评估的基础。',
+          conclusion: '这类企业适合进一步判断是否能够进入产业资本、上市公司、国资平台或并购基金的评估视野。',
+          action: '建议提交企业基础资料，由并购顾问进行人工复核，判断企业是否适合进入并购资源池。',
+          buttonText: '提交资料，进入人工初评'
+        },
+        'B': {
+          description: '根据您提交的信息，企业具备一定产业协同价值，可能适合与产业方、区域平台、上下游企业或资本机构进行合作评估。',
+          conclusion: '但是否适合直接推进并购，还需要结合财务数据、股权结构、客户稳定性、负债情况和实际控制人意愿进一步判断。',
+          action: '建议预约并购顾问进行人工复核，进一步评估企业的并购可行性。',
+          buttonText: '预约顾问复核'
+        },
+        'C': {
+          description: '根据您提交的信息，企业当前可能更适合先做融资规划、业务梳理、股权结构优化或资源合作，而不是立即推进并购交易。',
+          conclusion: '如果企业具备技术、客户、渠道、资质或区域市场优势，仍然有进一步包装和评估的空间。',
+          action: '建议先了解企业的优化方向，提升并购或融资的可能性。',
+          buttonText: '查看优化建议'
+        },
+        'D': {
+          description: '根据您提交的信息，企业当前在营收、利润、现金流、股权结构或并购诉求方面，可能暂不适合直接推进并购。',
+          conclusion: '建议先进行经营数据梳理、财务规范、客户结构优化和股权结构调整，再考虑进入并购评估流程。',
+          action: '建议获取企业优化方向，为后续并购或融资做好准备。',
+          buttonText: '获取企业优化方向'
+        }
+      };
+      return contents[grade] || contents['D'];
+    }
+
+    // ==================== 提交页 ====================
+    function renderSubmit() {
+      return `
+        <div class="page page-submit">
+          <div class="page-header">
+            <button class="btn-back" data-action="backToResult">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <h2>提交企业基础信息，进入人工初评</h2>
+          </div>
+          
+          <div class="form-content">
+            <div class="form-group">
+              <label>姓名</label>
+              <input type="text" id="name" placeholder="请输入您的姓名" />
+            </div>
+            
+            <div class="form-group">
+              <label>手机号</label>
+              <input type="tel" id="phone" placeholder="请输入手机号码" />
+            </div>
+            
+            <div class="form-group">
+              <label>公司名称</label>
+              <input type="text" id="company" placeholder="请输入企业全称" />
+            </div>
+            
+            <div class="form-group">
+              <label>所在城市</label>
+              <input type="text" id="city" placeholder="如：深圳市" />
+            </div>
+            
+            <div class="form-group">
+              <label>所属行业</label>
+              <select id="industry">
+                <option value="">请选择行业</option>
+                <option value="制造业">制造业</option>
+                <option value="农业食品">农业食品</option>
+                <option value="新能源">新能源</option>
+                <option value="新材料">新材料</option>
+                <option value="供应链物流">供应链物流</option>
+                <option value="建筑工程">建筑工程</option>
+                <option value="工业服务">工业服务</option>
+                <option value="其他行业">其他行业</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>年营收</label>
+              <select id="revenue">
+                <option value="">请选择营收规模</option>
+                <option value="500万以下">500万以下</option>
+                <option value="500万-2000万">500万-2000万</option>
+                <option value="2000万-5000万">2000万-5000万</option>
+                <option value="5000万-1亿">5000万-1亿</option>
+                <option value="1亿以上">1亿以上</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>企业核心需求</label>
+              <select id="demand">
+                <option value="">请选择核心需求</option>
+                <option value="全资退出">全资退出</option>
+                <option value="部分股权转让">部分股权转让</option>
+                <option value="融资扩张">融资扩张</option>
+                <option value="引入国资或产业方">引入国资或产业方</option>
+                <option value="被上市公司整合">被上市公司整合</option>
+                <option value="暂时了解">暂时了解</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>是否愿意参加并购评估沟通</label>
+              <select id="willing">
+                <option value="">请选择</option>
+                <option value="愿意">愿意</option>
+                <option value="可以先了解">可以先了解</option>
+                <option value="暂不确定">暂不确定</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="action-area">
+            <button class="btn-primary" data-action="submitForm">
+              <span>提交并进入人工复核</span>
+            </button>
+            <p class="privacy-note">
+              企业信息仅用于并购价值初步评估和专家审核，未经企业授权，不对外公开，不向第三方随意披露。
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==================== 成功页 ====================
+    function renderSuccess() {
+      return `
+        <div class="page page-success">
+          <div class="success-content">
+            <div class="success-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9 12l2 2 4-4"/>
+              </svg>
+            </div>
+            <h2>提交成功</h2>
+            <p>您的企业信息已提交</p>
+            <p>并购顾问将在<span class="highlight">24小时内</span>与您联系</p>
+            
+            <div class="next-steps">
+              <h4>接下来</h4>
+              <ol>
+                <li>并购顾问将对您的企业进行初步审核</li>
+                <li>审核通过后，将邀请您参加线上或线下的初步沟通</li>
+                <li>沟通后，将给出更详细的企业并购或融资建议</li>
+              </ol>
+            </div>
+          </div>
+          
+          <div class="action-area">
+            <button class="btn-secondary" data-action="home">
+              返回首页
+            </button>
+          </div>
+          
+          <p class="disclaimer">如有紧急咨询，请联系并购顾问：400-888-8888</p>
+        </div>
+      `;
+    }
+
+    // ==================== 事件绑定 ====================
+    function bindEvents() {
+      // 主按钮事件
+      document.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', handleAction);
+      });
+      
+      // 选项点击
+      document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.addEventListener('click', handleOptionClick);
+      });
+      
+      // 表单提交
+      const submitBtn = document.querySelector('[data-action="submitForm"]');
+      if (submitBtn) {
+        submitBtn.addEventListener('click', handleFormSubmit);
+      }
+    }
+
+    function handleAction(e) {
+      const action = e.currentTarget.dataset.action;
+      
+      switch(action) {
+        case 'start':
+          currentPage = 'intro';
+          render();
+          break;
+        case 'back':
+          currentPage = 'home';
+          render();
+          break;
+        case 'toQuestion':
+          answers = {};
+          currentPage = 'question';
+          render();
+          break;
+        case 'backToIntro':
+          currentPage = 'intro';
+          render();
+          break;
+        case 'backToResult':
+          currentPage = 'result';
+          render();
+          break;
+        case 'restart':
+          answers = {};
+          totalScore = 0;
+          currentGrade = null;
+          currentPage = 'intro';
+          render();
+          break;
+        case 'toSubmit':
+          currentPage = 'submit';
+          render();
+          break;
+        case 'home':
+          answers = {};
+          totalScore = 0;
+          currentGrade = null;
+          currentPage = 'home';
+          render();
+          break;
+      }
+    }
+
+    function handleOptionClick(e) {
+      const btn = e.currentTarget;
+      const score = parseInt(btn.dataset.score);
+      const questionIndex = Object.keys(answers).length;
+      const question = QUESTIONS[questionIndex];
+      
+      // 记录答案
+      answers[question.id] = score;
+      
+      // 添加选中效果
+      btn.classList.add('selected');
+      
+      // 延迟后进入下一题
+      setTimeout(() => {
+        if (questionIndex < QUESTIONS.length - 1) {
+          currentPage = 'question';
+          render();
+        } else {
+          // 所有题目完成，显示加载页
+          currentPage = 'loading';
+          render();
+        }
+      }, 400);
+    }
+
+    function handleFormSubmit() {
+      // 获取表单数据
+      const formData = {
+        name: document.getElementById('name')?.value,
+        phone: document.getElementById('phone')?.value,
+        company: document.getElementById('company')?.value,
+        city: document.getElementById('city')?.value,
+        industry: document.getElementById('industry')?.value,
+        revenue: document.getElementById('revenue')?.value,
+        demand: document.getElementById('demand')?.value,
+        willing: document.getElementById('willing')?.value,
+        score: totalScore,
+        grade: currentGrade?.grade
+      };
+      
+      // 简单验证
+      if (!formData.name || !formData.phone || !formData.company) {
+        alert('请填写必填项');
+        return;
+      }
+      
+      if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
+        alert('请输入正确的手机号');
+        return;
+      }
+      
+      // TODO: 发送到后端
+      console.log('提交数据:', formData);
+      
+      // 显示成功页
+      currentPage = 'success';
+      render();
+    }
+
+    // ==================== 初始化 ====================
+    document.addEventListener('DOMContentLoaded', render);
+  </script>
+</body>
+</html>

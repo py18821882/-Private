@@ -1,89 +1,128 @@
+// 数据库 Schema - AI 企业增长平台
+// 使用 SQLite，生产环境可切换为 PostgreSQL
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
-model UserSetting {
+// 企业测评表 - 用户填写的企业信息
+model Assessment {
   id            String   @id @default(cuid())
-  openaiApiKey  String?
-  openaiBaseUrl String?
-  openaiModel   String?
+  companyName   String   // 企业名称
+  industry      String   // 行业
+  mainBusiness  String   // 主营业务
+  revenue       String   // 营收规模
+  profit        String   // 利润情况
+  employeeCount String   // 员工人数
+  bossGoal      String   // 老板目标
+  contactPhone  String?  // 联系电话（可选）
+  contactName   String?  // 联系人姓名（可选）
+  status        String   @default("pending") // pending:待分析, analyzing:分析中, completed:已完成, failed:失败
+  aiResult      String?  // AI 分析结果（JSON 格式）
+  aiModel       String?  // 使用的 AI 模型
+  aiUsage       Int      @default(0) // AI token 用量
+  orderId       String?  @unique // 关联订单 ID
+  order         Order?   @relation(fields: [orderId], references: [id])
+  paid          Boolean  @default(false) // 是否已支付
+  reportId      String?  @unique // 关联报告 ID
+  report        Report?  @relation(fields: [reportId], references: [id])
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  @@index([status])
+  @@index([createdAt])
 }
 
-model Client {
-  id                     String     @id @default(cuid())
-  companyName            String
-  bossName               String?
-  phone                  String?
-  wechat                 String?
-  city                   String?
-  industry               String?
-  revenue                String?
-  profit                 String?
-  cashflow               String?
-  fixedAssets            String?
-  debt                   String?
-  receivables            String?
-  employeeCount          String?
-  customerStructure      String?
-  bossDemand             String?
-  financingNeed          Boolean    @default(false)
-  maNeed                 Boolean    @default(false)
-  summitInterest         Boolean    @default(false)
-  paidAssessmentInterest Boolean    @default(false)
-  stage                  String?
-  level                  String     @default("C")
-  closeProbability       Int        @default(20)
-  notes                  String?
-  createdAt              DateTime   @default(now())
-  updatedAt              DateTime   @updatedAt
-  followUps              FollowUp[]
-  agentRuns              AgentRun[]
-}
-
-model FollowUp {
+// 订单表
+model Order {
   id           String   @id @default(cuid())
-  clientId     String
-  client       Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  content      String
-  nextAction   String?
-  followUpDate DateTime
-  status       String   @default("未跟进")
+  orderNo      String   @unique // 订单号
+  assessmentId String   @unique // 关联测评 ID
+  assessment   Assessment?
+  amount       Int      // 订单金额（分）
+  status       String   @default("pending") // pending:待支付, paid:已支付, refunded:已退款, cancelled:已取消
+  payMethod    String?  // 支付方式: wechat, alipay
+  payTime      DateTime? // 支付时间
+  transactionId String? // 第三方支付流水号
+  refundTime   DateTime? // 退款时间
+  refundAmount Int?     // 退款金额（分）
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  @@index([orderNo])
+  @@index([status])
+  @@index([createdAt])
 }
 
-model AgentRun {
-  id        String   @id @default(cuid())
-  clientId  String?
-  client    Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  agentType String
-  input     String
-  output    String
-  createdAt DateTime @default(now())
+// 报告表
+model Report {
+  id             String   @id @default(cuid())
+  assessmentId   String   @unique // 关联测评 ID
+  assessment     Assessment?
+  title          String   // 报告标题
+  summary        String   // AI 总结
+  companyInfo    String   // 企业情况（JSON）
+  problemAnalysis String  // 问题分析（JSON）
+  advantages     String   // 优势（JSON）
+  risks          String   // 风险（JSON）
+  suggestions    String   // 建议（JSON）
+  fullContent    String   // 完整报告内容（JSON）
+  pdfUrl         String?  // PDF 文件地址
+  viewCount      Int      @default(0) // 查看次数
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  @@index([createdAt])
 }
 
-model KnowledgeItem {
-  id        String   @id @default(cuid())
-  title     String
-  category  String?
-  content   String
-  createdAt DateTime @default(now())
+// 支付流水表
+model PaymentLog {
+  id          String   @id @default(cuid())
+  orderId     String   // 订单 ID
+  orderNo     String   // 订单号
+  type        String   // 类型: pay, refund, notify
+  method      String   // 支付方式: wechat, alipay
+  amount      Int      // 金额（分）
+  status      String   // 状态: success, failed, pending
+  rawData     String?  // 原始回调数据（JSON）
+  errorMsg    String?  // 错误信息
+  createdAt   DateTime @default(now())
+  @@index([orderId])
+  @@index([orderNo])
+  @@index([createdAt])
+}
+
+// 系统配置表
+model SystemConfig {
+  id        String  @id @default(cuid())
+  key       String  @unique
+  value     String?
+  remark    String?
   updatedAt DateTime @updatedAt
 }
 
-model ContentItem {
-  id          String   @id @default(cuid())
-  title       String
-  contentType String
-  input       String
-  output      String
-  createdAt   DateTime @default(now())
+// 并购价值测评表
+model MaAssessment {
+  id            String   @id @default(cuid())
+  name          String   // 联系人姓名
+  phone         String   // 手机号
+  companyName   String   // 公司名称
+  city          String?  // 所在城市
+  industry      String?  // 所属行业
+  revenue       String?  // 年营收
+  demand        String?  // 核心需求
+  willing       String?  // 是否愿意参加沟通
+  score         Int      // 测评得分
+  grade         String   // 等级: A/B/C/D
+  answers       String?  // 答题详情（JSON）
+  status        String   @default("pending") // pending:待处理, contacted:已联系, closed:已关闭
+  remark        String?  // 备注
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  @@index([phone])
+  @@index([grade])
+  @@index([status])
+  @@index([createdAt])
 }

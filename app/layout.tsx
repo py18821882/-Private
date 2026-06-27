@@ -1,21 +1,41 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { Sidebar } from "@/components/sidebar";
+// 根布局
+import type { Metadata, Viewport } from 'next'
+import './globals.css'
+import { SYSTEM_CONFIG, DOMAINS } from '@/lib/config'
 
 export const metadata: Metadata = {
-  title: "个人智能体工作台",
-  description: "并购咨询、客户跟进、内容生产的本地优先智能体工作台"
-};
+  title: `${SYSTEM_CONFIG.productName} - AI 智能测评`,
+  description: '专业企业增长分析，AI 智能诊断，发现企业增长潜力，提供定制化发展建议',
+  keywords: '企业测评, AI分析, 增长诊断, 企业咨询, 并购',
+  authors: [{ name: SYSTEM_CONFIG.companyName }],
+  openGraph: {
+    title: `${SYSTEM_CONFIG.productName} - AI 智能测评`,
+    description: '专业企业增长分析，AI 智能诊断，发现企业增长潜力',
+    type: 'website',
+    url: DOMAINS.h5,
+  },
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="zh-CN">
       <body>
-        <div className="min-h-screen lg:flex">
-          <Sidebar />
-          <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:px-8">{children}</main>
+        <div className="min-h-screen max-w-md mx-auto bg-white shadow-2xl">
+          {children}
         </div>
       </body>
     </html>
-  );
+  )
 }
