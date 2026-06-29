@@ -1,128 +1,134 @@
-'use client'
+﻿'use client'
 
 import { useRouter } from 'next/navigation'
-import { TrendingUp, Target, Shield, Zap, ArrowRight } from 'lucide-react'
+import { ArrowRight, Building2, FileSearch, Handshake, ShieldCheck, TrendingUp } from 'lucide-react'
 
 export default function HomePage() {
   const router = useRouter()
 
   const features = [
     {
-      icon: TrendingUp,
-      title: '增长潜力分析',
-      desc: 'AI 深度诊断企业增长空间',
+      icon: FileSearch,
+      title: '初步评估',
+      desc: '判断是否适合进入并购、融资或上市公司资源对接流程',
     },
     {
-      icon: Target,
-      title: '问题精准定位',
-      desc: '发现企业核心瓶颈和痛点',
+      icon: Building2,
+      title: '上市公司并购视角',
+      desc: '围绕利润、资产、客户、资质、团队和区域价值做初步判断',
     },
     {
-      icon: Shield,
-      title: '风险提前预警',
-      desc: '识别潜在经营风险',
+      icon: Handshake,
+      title: '资本合作路径',
+      desc: '初步识别股权出售、融资、并购重组、国资合作等方向',
     },
     {
-      icon: Zap,
-      title: '定制发展建议',
-      desc: '提供可落地的优化方案',
+      icon: ShieldCheck,
+      title: '内部流转依据',
+      desc: '提交后用于企业资本合作评估与后续顾问沟通',
     },
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-50 via-white to-white">
-      {/* 顶部装饰 */}
-      <div className="relative h-72 overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-pink-500">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRoLTJ2LTRoLTJ2NGgtNHYyaDR2NGgydi00aDR2LTJ6bTEwLTEwSDQ0VjIwaC0ydjRoLTR2Mmg0djRoMnYtNGg0di0yeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
-        
-        {/* 内容 */}
-        <div className="relative z-10 flex h-full flex-col justify-center px-6 text-white safe-top">
-          <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs backdrop-blur-sm">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
-            AI 智能诊断系统
+    <div className="min-h-screen bg-[var(--bg-base)]">
+      <div className="relative h-80 overflow-hidden bg-gradient-to-br from-navy-900 via-navy-800 to-navy-700">
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent opacity-70" />
+        <div className="absolute inset-0 opacity-[0.08]">
+          <svg className="h-full w-full" viewBox="0 0 400 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="42" y="56" width="120" height="86" stroke="white" strokeWidth="0.5" />
+            <rect x="190" y="92" width="150" height="92" stroke="white" strokeWidth="0.5" />
+            <line x1="0" y1="218" x2="400" y2="218" stroke="white" strokeWidth="0.5" />
+            <line x1="112" y1="0" x2="112" y2="320" stroke="white" strokeWidth="0.5" />
+            <line x1="302" y1="0" x2="302" y2="320" stroke="white" strokeWidth="0.5" />
+          </svg>
+        </div>
+
+        <div className="relative z-10 flex h-full flex-col justify-center px-4 text-white safe-top sm:px-6">
+          <div className="mb-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-gold/30 bg-gold/20 px-3 py-1 text-xs backdrop-blur-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-gold-light" />
+            <span className="text-gold-light">企业资本合作 · 初步评估</span>
           </div>
-          <h1 className="text-3xl font-bold leading-tight">
-            企业 AI 增长测评
+          <h1 className="text-3xl font-bold leading-tight tracking-tight">
+            中科商业咨询
+            <br />
+            资本合作需求登记
           </h1>
-          <p className="mt-2 text-sm text-white/80">
-            3 分钟完成测评，AI 为您生成专业企业分析报告
+          <p className="mt-3 text-sm leading-relaxed text-white/75">
+            联合深圳上市公司并购协会资源视角，对企业并购、融资、股权出售、产业整合项目进行初步筛选。
           </p>
         </div>
 
-        {/* 底部波浪 */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white" />
+          <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" className="h-12 w-full">
+            <path d="M0 80L60 60C120 40 240 20 360 15C480 10 600 20 720 30C840 40 960 50 1080 55C1200 60 1320 60 1380 60L1440 60V80H0Z" fill="var(--bg-base)" />
           </svg>
         </div>
       </div>
 
-      {/* 主体内容 */}
-      <div className="px-6 pb-10 -mt-6">
-        {/* 数据亮点 */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
+      <div className="px-4 pb-10 -mt-4 sm:px-6">
+        <div className="mb-8 grid grid-cols-3 gap-2 sm:gap-3">
           {[
-            { num: '10,000+', label: '企业测评' },
-            { num: '98%', label: '好评率' },
-            { num: '50+', label: '行业覆盖' },
-          ].map((item, i) => (
-            <div key={i} className="glass-card rounded-2xl p-4 text-center shadow-sm">
-              <div className="text-xl font-bold gradient-text">{item.num}</div>
-              <div className="mt-1 text-xs text-gray-500">{item.label}</div>
+            { num: '内部', label: '项目流转' },
+            { num: '筛选', label: '并购价值' },
+            { num: '对接', label: '资本资源' },
+          ].map((item, index) => (
+            <div key={index} className="glass-card min-w-0 rounded-2xl p-2 text-center shadow-card sm:p-3">
+              <div className="text-base font-bold gradient-text sm:text-xl">{item.num}</div>
+              <div className="mt-1 break-words text-xs text-[var(--text-tertiary)]">{item.label}</div>
             </div>
           ))}
         </div>
 
-        {/* 核心功能 */}
-        <h2 className="mb-4 text-lg font-bold text-gray-800">你将获得</h2>
-        <div className="mb-8 grid grid-cols-2 gap-3">
-          {features.map((feature, i) => (
-            <div
-              key={i}
-              className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm"
-            >
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-600">
+        <div className="mb-4 flex items-center gap-2">
+          <div className="h-4 w-1 rounded-full bg-gold" />
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">适合提交的项目</h2>
+        </div>
+        <div className="mb-8 grid grid-cols-2 gap-2 sm:gap-3">
+          {features.map((feature, index) => (
+            <div key={index} className="min-w-0 rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-4 shadow-card">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-navy-50 text-navy-600 dark:bg-navy-800 dark:text-navy-200">
                 <feature.icon size={20} />
               </div>
-              <h3 className="font-semibold text-gray-800">{feature.title}</h3>
-              <p className="mt-1 text-xs text-gray-500">{feature.desc}</p>
+              <h3 className="break-words font-semibold text-[var(--text-primary)]">{feature.title}</h3>
+              <p className="mt-1 break-words text-xs leading-relaxed text-[var(--text-secondary)]">{feature.desc}</p>
             </div>
           ))}
         </div>
 
-        {/* 报告预览示意 */}
-        <div className="mb-8 rounded-2xl bg-gradient-to-br from-violet-50 to-pink-50 p-5">
-          <h2 className="mb-3 font-bold text-gray-800">报告包含</h2>
-          <div className="space-y-2">
+        <div className="mb-8 rounded-2xl border border-navy-100 bg-navy-50/50 p-5 dark:border-navy-700 dark:bg-navy-800/30">
+          <div className="mb-3 flex items-center gap-2">
+            <div className="h-4 w-1 rounded-full bg-gold" />
+            <h2 className="font-bold text-[var(--text-primary)]">提交后主要评估</h2>
+          </div>
+          <div className="space-y-2.5">
             {[
-              '企业基本面分析与行业对标',
-              '核心问题诊断与根因分析',
-              '企业优势与增长潜力评估',
-              '经营风险提示与应对建议',
-              '6-12 个月发展路线图',
-              'AI 综合评分与评级',
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm text-gray-600">
-                <div className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+              '是否具备上市公司并购关注点',
+              '是否适合股权出售、融资或并购重组',
+              '企业利润、资产、客户、资质和团队价值',
+              '可对接的产业资本、国资平台或基金方向',
+              '后续是否进入一对一项目沟通',
+            ].map((item, index) => (
+              <div key={index} className="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
+                <div className="h-1.5 w-1.5 rounded-full bg-gold" />
                 {item}
               </div>
             ))}
           </div>
         </div>
 
-        {/* 开始测评按钮 */}
         <button
           onClick={() => router.push('/assessment')}
-          className="btn-press flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 py-4 text-base font-semibold text-white shadow-lg shadow-violet-500/30"
+          className="btn-press flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-navy-700 to-navy-800 py-4 text-base font-semibold text-white shadow-lg shadow-navy-900/20 hover:from-navy-600 hover:to-navy-700 transition-colors"
         >
-          开始免费测评
+          提交项目资料
           <ArrowRight size={18} />
         </button>
 
-        <p className="mt-3 text-center text-xs text-gray-400">
-          约 3 分钟完成 · 生成专属分析报告
+        <p className="mt-3 text-center text-xs text-[var(--text-tertiary)]">
+          用于企业资本合作初步评估 · 顾问后续沟通参考
         </p>
       </div>
     </div>
   )
 }
+

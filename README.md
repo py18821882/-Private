@@ -1,145 +1,110 @@
-# 个人智能体工作台
+﻿# 企业资本合作初步评估 H5
 
-自用型效率工具 MVP，不是 SaaS。第一版目标是：
-
-- 能录客户
-- 能管理跟进
-- 能配置 OpenAI-compatible 模型
-- 能生成并购分析、话术、一页纸报告、国学文案、短视频脚本
-- 能保存生成记录并复制结果
+这是一个面向客户的 H5 表单项目，用于收集企业并购、融资、股权出售、产业资源协同等合作需求，并生成初步评估结果。
 
 ## 技术栈
 
-- Next.js App Router
+- Next.js 14
+- React 18
 - TypeScript
 - Tailwind CSS
 - Prisma
-- Supabase PostgreSQL
-- OpenAI-compatible API
 
-## 本地开发
+## 页面说明
 
-1. 安装依赖
+- `/`：客户可见首页
+- `/assessment`：客户提交企业发展需求
+- `/assessment/[id]`：评估结果预览与付费解锁
+- `/report/[id]`：完整评估报告
+
+## 本地运行
 
 ```bash
 npm install
-```
-
-2. 创建环境变量
-
-```powershell
-Copy-Item .env.example .env
-```
-
-3. 在 `.env` 中填入 Supabase 连接串
-
-```env
-DATABASE_URL="postgresql://postgres.PROJECT_REF:YOUR_DB_PASSWORD@aws-0-region.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
-DIRECT_URL="postgresql://postgres:YOUR_DB_PASSWORD@db.PROJECT_REF.supabase.co:5432/postgres"
-```
-
-4. 初始化数据库表
-
-```bash
-npm run db:push
-```
-
-5. 启动开发服务
-
-```bash
 npm run dev
 ```
 
-打开：
-
-```txt
-http://localhost:3000/dashboard
-```
-
-## EdgeOne Pages + Supabase 部署
-
-EdgeOne Pages 当前支持 Next.js App Router、SSR 和 Route Handlers。本项目的页面和 API Routes 可以直接部署。
-
-### 你需要准备
-
-- Supabase 项目
-- Supabase 数据库密码
-- Supabase `DATABASE_URL`
-- Supabase `DIRECT_URL`
-- EdgeOne Pages 账号
-- 一个 GitHub / GitLab 仓库用于导入部署
-- 一个公网访问密码 `APP_PASSWORD`
-- 可选：OpenAI-compatible 模型配置
-
-### Supabase 连接串
-
-在 Supabase 后台进入：
-
-```txt
-Project Settings -> Database -> Connection string
-```
-
-建议：
-
-- `DATABASE_URL` 使用 Transaction Pooler，适合线上 serverless / edge 平台连接。
-- `DIRECT_URL` 使用 Direct connection，适合 Prisma 初始化表结构。
-
-### 初始化 Supabase 表结构
-
-在本地 `.env` 填好 Supabase 连接串后执行：
+浏览器打开：
 
 ```bash
-npm run db:push
+http://localhost:3000
 ```
 
-这一步会把 Prisma schema 推到 Supabase PostgreSQL。
+## 构建验证
 
-### EdgeOne Pages 构建配置
-
-导入 Git 仓库后，构建配置建议：
-
-```txt
-Framework: Next.js
-Install command: npm install
-Build command: npm run build
-Output directory: .next
+```bash
+npm run build
+npm run start
 ```
 
-### EdgeOne 环境变量
+## 环境变量
 
-在 EdgeOne Pages 项目里配置：
+复制 `.env.example` 为 `.env.local`，按需填写：
 
-```env
-DATABASE_URL=你的 Supabase Transaction Pooler URL
-DIRECT_URL=你的 Supabase Direct connection URL
-APP_PASSWORD=你自己的访问密码
-OPENAI_API_KEY=可选，也可以上线后在 /settings 填
-OPENAI_BASE_URL=https://api.openai.com/v1
-OPENAI_MODEL=gpt-4o-mini
+```bash
+cp .env.example .env.local
 ```
 
-如果用 DeepSeek：
+第一阶段部署到 Vercel 时，至少建议配置：
 
-```env
-OPENAI_BASE_URL=https://api.deepseek.com
-OPENAI_MODEL=deepseek-chat
+- `DATABASE_URL`
+- `OPENAI_BASE_URL`
+- `OPENAI_API_KEY`
+- `OPENAI_MODEL`
+- `NEXT_PUBLIC_H5_DOMAIN`
+- `NEXT_PUBLIC_API_DOMAIN`
+- `NEXT_PUBLIC_PRODUCT_NAME`
+- `NEXT_PUBLIC_COMPANY_NAME`
+- `NEXT_PUBLIC_PAYMENT_QR_URL`
+- `APP_PASSWORD`
+
+## Vercel 部署步骤
+
+1. 把项目推送到 GitHub。
+2. 登录 Vercel，选择 `Add New Project`。
+3. 导入当前 GitHub 仓库。
+4. Framework Preset 选择 `Next.js`。
+5. Build Command 使用默认或填写：`npm run build`。
+6. 在 Vercel 项目设置里添加环境变量。
+7. 点击 Deploy，等待构建完成。
+8. 使用 Vercel 默认域名先测试手机端页面。
+
+## 绑定正式域名
+
+第一阶段可以先使用 Vercel 默认域名测试。准备正式投放后：
+
+1. 购买正式域名。
+2. 将域名 DNS 托管到 Cloudflare。
+3. 在 Vercel 项目中添加自定义域名。
+4. 按 Vercel 提示配置 DNS 记录。
+5. 等待 HTTPS 自动签发。
+
+推荐访问路径：
+
+```bash
+https://你的域名.com/assessment
 ```
 
-如果用 Kimi：
+## 后续扩展路线
 
-```env
-OPENAI_BASE_URL=https://api.moonshot.ai/v1
-OPENAI_MODEL=moonshot-v1-8k
+第一阶段：Vercel 部署 H5。
+
+第二阶段：绑定正式域名，并通过 Cloudflare 管理 DNS、HTTPS 和基础安全。
+
+第三阶段：接入数据库、企业微信通知、客户后台、文件上传和客户分层管理。
+
+## 上线前检查
+
+```bash
+npm install
+npm run build
+npm run start
 ```
 
-## 上线后的使用
+确保：
 
-1. 打开 EdgeOne 分配的访问地址。
-2. 输入 `APP_PASSWORD`。
-3. 进入 `/settings` 配置模型。
-4. 进入 `/clients/new` 录入客户。
-5. 在客户详情页或 `/agents` 生成话术、报告和分析。
-
-## 业务边界
-
-本项目没有支付、多租户、团队权限和插件市场。公网部署只增加了单密码保护，用于保护个人客户资料和模型配置。
+- 首页没有内部表达。
+- `/assessment` 在手机微信内可正常填写。
+- 收款码图片已配置。
+- `APP_PASSWORD` 已设置为强密码。
+- `.env`、`.env.local` 不要提交到 GitHub。

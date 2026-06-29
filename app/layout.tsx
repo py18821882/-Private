@@ -1,16 +1,15 @@
-// 根布局
-import type { Metadata, Viewport } from 'next'
+﻿import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { SYSTEM_CONFIG, DOMAINS } from '@/lib/config'
 
 export const metadata: Metadata = {
-  title: `${SYSTEM_CONFIG.productName} - AI 智能测评`,
-  description: '专业企业增长分析，AI 智能诊断，发现企业增长潜力，提供定制化发展建议',
-  keywords: '企业测评, AI分析, 增长诊断, 企业咨询, 并购',
+  title: `${SYSTEM_CONFIG.productName} - 企业资本合作初步评估`,
+  description: '中科商业咨询企业发展需求登记，用于并购、融资、股权出售、上市公司资源对接初步评估。',
+  keywords: '中科商业咨询, 初步评估, 并购, 融资, 股权出售, 上市公司并购',
   authors: [{ name: SYSTEM_CONFIG.companyName }],
   openGraph: {
-    title: `${SYSTEM_CONFIG.productName} - AI 智能测评`,
-    description: '专业企业增长分析，AI 智能诊断，发现企业增长潜力',
+    title: `${SYSTEM_CONFIG.productName} - 企业资本合作初步评估`,
+    description: '并购、融资、股权出售、上市公司资源对接初步评估。',
     type: 'website',
     url: DOMAINS.h5,
   },
@@ -32,10 +31,14 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body>
-        <div className="min-h-screen max-w-md mx-auto bg-white shadow-2xl">
+        <div
+          className="min-h-screen w-full mx-auto overflow-x-hidden bg-white shadow-2xl"
+          style={{ maxWidth: 'min(100vw, 28rem)' }}
+        >
           {children}
         </div>
       </body>
     </html>
   )
 }
+

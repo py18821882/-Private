@@ -1,12 +1,11 @@
-// 微信支付封装
-// 支持 JSAPI 支付（公众号/微信浏览器内）
-// 注意：实际生产环境需要商户号、证书等配置
+﻿// 寰俊鏀粯灏佽
+// 鏀寔 JSAPI 鏀粯锛堝叕浼楀彿/寰俊娴忚鍣ㄥ唴锛?// 娉ㄦ剰锛氬疄闄呯敓浜х幆澧冮渶瑕佸晢鎴峰彿銆佽瘉涔︾瓑閰嶇疆
 
 import { PAYMENT_CONFIG, buildUrl } from '../config'
 import { generateOrderNo } from '../utils/order'
 import crypto from 'crypto'
 
-// 创建 JSAPI 订单参数
+// 鍒涘缓 JSAPI 璁㈠崟鍙傛暟
 export interface WechatPayParams {
   appId: string
   timeStamp: string
@@ -16,24 +15,23 @@ export interface WechatPayParams {
   paySign: string
 }
 
-// 创建支付订单请求
+// 鍒涘缓鏀粯璁㈠崟璇锋眰
 export interface CreatePayOrderRequest {
   orderNo: string
-  amount: number // 分
+  amount: number
   description: string
-  openid?: string // 用户 openid（JSAPI 必需）
+  openid?: string
   clientIp?: string
 }
 
 /**
- * 生成随机字符串
- */
+ * 鐢熸垚闅忔満瀛楃涓? */
 function generateNonceStr(length: number = 32): string {
   return crypto.randomBytes(length).toString('hex').substring(0, length)
 }
 
 /**
- * 生成签名
+ * 鐢熸垚绛惧悕
  */
 function generateSign(params: Record<string, any>, apiKey: string): string {
   const sortedParams = Object.keys(params)
@@ -54,7 +52,7 @@ function generateSign(params: Record<string, any>, apiKey: string): string {
 }
 
 /**
- * 验证微信支付回调签名
+ * 楠岃瘉寰俊鏀粯鍥炶皟绛惧悕
  */
 export function verifyWechatNotifySign(params: Record<string, any>): boolean {
   const { sign } = params
@@ -68,8 +66,8 @@ export function verifyWechatNotifySign(params: Record<string, any>): boolean {
 }
 
 /**
- * 模拟创建微信支付订单（开发环境）
- * 生产环境需要调用微信支付统一下单 API
+ * 妯℃嫙鍒涘缓寰俊鏀粯璁㈠崟锛堝紑鍙戠幆澧冿級
+ * 鐢熶骇鐜闇€瑕佽皟鐢ㄥ井淇℃敮浠樼粺涓€涓嬪崟 API
  */
 export async function createWechatOrder(params: CreatePayOrderRequest): Promise<{
   prepayId: string
@@ -77,9 +75,8 @@ export async function createWechatOrder(params: CreatePayOrderRequest): Promise<
 }> {
   const { wechat } = PAYMENT_CONFIG
 
-  // 开发环境：如果没有配置商户号，返回模拟数据
+  // 寮€鍙戠幆澧冿細濡傛灉娌℃湁閰嶇疆鍟嗘埛鍙凤紝杩斿洖妯℃嫙鏁版嵁
   if (!wechat.mchId || !wechat.apiKey) {
-    console.warn('⚠️  微信支付未配置，使用模拟支付模式')
     
     const mockPrepayId = `mock_prepay_${generateNonceStr(16)}`
     const timeStamp = Math.floor(Date.now() / 1000).toString()
@@ -107,15 +104,34 @@ export async function createWechatOrder(params: CreatePayOrderRequest): Promise<
     }
   }
 
-  // 生产环境：调用微信支付统一下单 API
-  // 这里需要根据微信支付 V3 或 V2 接口实现
-  // 为简化，先使用模拟实现，生产环境请替换为真实 API 调用
-  throw new Error('生产环境微信支付请接入真实 API')
+  const manualPrepayId = `manual_${params.orderNo}`
+  const timeStamp = Math.floor(Date.now() / 1000).toString()
+  const nonceStr = generateNonceStr()
+
+  return {
+    prepayId: manualPrepayId,
+    payParams: {
+      appId: wechat.appId || 'manual_payment',
+      timeStamp,
+      nonceStr,
+      package: `manual_order=${params.orderNo}`,
+      signType: 'MANUAL',
+      paySign: generateSign(
+        {
+          appId: wechat.appId || 'manual_payment',
+          timeStamp,
+          nonceStr,
+          package: `manual_order=${params.orderNo}`,
+          signType: 'MANUAL',
+        },
+        wechat.apiKey || 'manual_key'
+      ),
+    },
+  }
 }
 
 /**
- * 模拟支付成功回调（开发环境测试用）
- */
+ * 妯℃嫙鏀粯鎴愬姛鍥炶皟锛堝紑鍙戠幆澧冩祴璇曠敤锛? */
 export function generateMockNotifyData(orderNo: string, amount: number): Record<string, any> {
   const { wechat } = PAYMENT_CONFIG
   const params = {
@@ -138,3 +154,5 @@ export function generateMockNotifyData(orderNo: string, amount: number): Record<
   const sign = generateSign(params, wechat.apiKey || 'mock_key')
   return { ...params, sign }
 }
+
+
