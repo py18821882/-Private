@@ -4,15 +4,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { successResponse, notFoundError, errorResponse } from '@/lib/utils/response'
-import { getReport, getReportByAssessmentId, getReportPreview } from '@/lib/report'
+import { getReport, getReportPreview } from '@/lib/report'
 import { PAYMENT_CONFIG } from '@/lib/config'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     const assessment = await prisma.assessment.findUnique({
       where: { id },

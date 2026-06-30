@@ -1,12 +1,63 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import type { ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, FileDown, Printer, Share2,
   TrendingUp, AlertTriangle, Shield, Lightbulb, Target,
-  Star, ChevronDown, ChevronUp
+  Star, ChevronDown, ChevronUp,
+  type LucideIcon,
 } from 'lucide-react'
+
+function SectionCard({
+  id,
+  icon: Icon,
+  title,
+  children,
+  count,
+  expanded,
+  onToggle,
+}: {
+  id: string
+  icon: LucideIcon
+  title: string
+  children: ReactNode
+  count?: number
+  expanded: boolean
+  onToggle: (id: string) => void
+}) {
+  return (
+    <div className="bg-[var(--bg-surface)] rounded-2xl shadow-card overflow-hidden">
+      <button
+        onClick={() => onToggle(id)}
+        className="w-full flex items-center justify-between p-5 hover:bg-[var(--bg-subtle)] transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-navy-50 text-navy-600 flex items-center justify-center dark:bg-navy-800 dark:text-navy-200">
+            <Icon size={20} />
+          </div>
+          <div className="text-left">
+            <h3 className="font-semibold text-[var(--text-primary)]">{title}</h3>
+            {count !== undefined && (
+              <span className="text-xs text-[var(--text-tertiary)]">共 {count} 项</span>
+            )}
+          </div>
+        </div>
+        {expanded ? (
+          <ChevronUp size={20} className="text-[var(--text-tertiary)]" />
+        ) : (
+          <ChevronDown size={20} className="text-[var(--text-tertiary)]" />
+        )}
+      </button>
+      {expanded && (
+        <div className="px-5 pb-5 border-t border-[var(--border-default)]">
+          <div className="pt-4">{children}</div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function ReportPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -111,49 +162,6 @@ export default function ReportPage({ params }: { params: { id: string } }) {
     low: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
   }
 
-  const SectionCard = ({
-    id,
-    icon: Icon,
-    title,
-    children,
-    count,
-  }: {
-    id: string
-    icon: any
-    title: string
-    children: React.ReactNode
-    count?: number
-  }) => (
-    <div className="bg-[var(--bg-surface)] rounded-2xl shadow-card overflow-hidden">
-      <button
-        onClick={() => toggleSection(id)}
-        className="w-full flex items-center justify-between p-5 hover:bg-[var(--bg-subtle)] transition-colors"
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-navy-50 text-navy-600 flex items-center justify-center dark:bg-navy-800 dark:text-navy-200">
-            <Icon size={20} />
-          </div>
-          <div className="text-left">
-            <h3 className="font-semibold text-[var(--text-primary)]">{title}</h3>
-            {count !== undefined && (
-              <span className="text-xs text-[var(--text-tertiary)]">共 {count} 项</span>
-            )}
-          </div>
-        </div>
-        {expandedSections[id] ? (
-          <ChevronUp size={20} className="text-[var(--text-tertiary)]" />
-        ) : (
-          <ChevronDown size={20} className="text-[var(--text-tertiary)]" />
-        )}
-      </button>
-      {expandedSections[id] && (
-        <div className="px-5 pb-5 border-t border-[var(--border-default)]">
-          <div className="pt-4">{children}</div>
-        </div>
-      )}
-    </div>
-  )
-
   return (
     <div className="min-h-screen bg-[var(--bg-base)] pb-10">
       {/* 顶部导航 */}
@@ -246,6 +254,8 @@ export default function ReportPage({ params }: { params: { id: string } }) {
           id="companyInfo"
           icon={Target}
           title="企业情况"
+          expanded={expandedSections.companyInfo}
+          onToggle={toggleSection}
         >
           <div className="text-sm text-[var(--text-secondary)] leading-relaxed">
             {typeof report.companyInfo === 'string' ? report.companyInfo : JSON.stringify(report.companyInfo)}
@@ -272,6 +282,8 @@ export default function ReportPage({ params }: { params: { id: string } }) {
           icon={AlertTriangle}
           title="问题分析"
           count={report.problemAnalysis?.length || 0}
+          expanded={expandedSections.problemAnalysis}
+          onToggle={toggleSection}
         >
           <div className="space-y-4">
             {Array.isArray(report.problemAnalysis) && report.problemAnalysis.map((item: any, i: number) => (
@@ -301,6 +313,8 @@ export default function ReportPage({ params }: { params: { id: string } }) {
           icon={TrendingUp}
           title="企业优势"
           count={report.advantages?.length || 0}
+          expanded={expandedSections.advantages}
+          onToggle={toggleSection}
         >
           <div className="space-y-4">
             {Array.isArray(report.advantages) && report.advantages.map((item: any, i: number) => (
@@ -325,6 +339,8 @@ export default function ReportPage({ params }: { params: { id: string } }) {
           icon={Shield}
           title="风险提示"
           count={report.risks?.length || 0}
+          expanded={expandedSections.risks}
+          onToggle={toggleSection}
         >
           <div className="space-y-4">
             {Array.isArray(report.risks) && report.risks.map((item: any, i: number) => (
@@ -354,6 +370,8 @@ export default function ReportPage({ params }: { params: { id: string } }) {
           icon={Lightbulb}
           title="发展建议"
           count={report.suggestions?.length || 0}
+          expanded={expandedSections.suggestions}
+          onToggle={toggleSection}
         >
           <div className="space-y-4">
             {Array.isArray(report.suggestions) && report.suggestions.map((item: any, i: number) => (

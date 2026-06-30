@@ -3,14 +3,14 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { successResponse, errorResponse, notFoundError } from '@/lib/utils/response'
-import { checkOrderStatus, getOrderById } from '@/lib/payment'
+import { checkOrderStatus } from '@/lib/payment'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     const status = await checkOrderStatus(id)
 

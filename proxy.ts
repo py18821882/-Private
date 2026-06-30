@@ -37,7 +37,7 @@ function isPublicPath(pathname: string): boolean {
   return false;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const appPassword = process.env.APP_PASSWORD;
   // 如果没有配置密码，直接放行
   if (!appPassword) return NextResponse.next();

@@ -4,11 +4,13 @@
 
 ## 技术栈
 
-- Next.js 14
+- Next.js 16
 - React 18
 - TypeScript
 - Tailwind CSS
 - Prisma
+
+Node.js 建议使用 `20.9.0` 以上版本，和 Vercel 当前 Next.js 16 构建要求保持一致。
 
 ## 页面说明
 
@@ -33,6 +35,7 @@ http://localhost:3000
 ## 构建验证
 
 ```bash
+npm run lint
 npm run build
 npm run start
 ```
@@ -97,6 +100,7 @@ https://你的域名.com/assessment
 
 ```bash
 npm install
+npm run lint
 npm run build
 npm run start
 ```

@@ -8,10 +8,10 @@ import { getReport, getReportPreview } from '@/lib/report'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     const report = await prisma.report.findUnique({
       where: { id },
