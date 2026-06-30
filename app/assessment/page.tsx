@@ -71,7 +71,9 @@ export default function AssessmentPage() {
 
       const result = await response.json()
 
-      if (result.success) {
+      if (result.success && result.data?.fallback) {
+        router.push(`/assessment/submitted?ref=${encodeURIComponent(result.data.id)}`)
+      } else if (result.success) {
         router.push(`/assessment/${result.data.id}`)
       } else {
         alert(result.message || '提交失败，请重试')

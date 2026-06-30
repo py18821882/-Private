@@ -13,6 +13,10 @@ function isValidPhone(phone: string): boolean {
   return /^1[3-9]\d{9}$/.test(phone)
 }
 
+function createFallbackId(): string {
+  return `manual_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+}
+
 // 提交测评
 export async function POST(request: NextRequest) {
   try {
@@ -37,21 +41,61 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(validationError('请输入正确的手机号'))
     }
 
-    // 创建测评记录
-    const assessment = await prisma.assessment.create({
-      data: {
-        companyName: companyName.trim().slice(0, 100),
-        industry: String(industry).slice(0, 50),
-        mainBusiness: mainBusiness.trim().slice(0, 500),
-        revenue: String(revenue).slice(0, 50),
-        profit: String(profit).slice(0, 50),
-        employeeCount: String(employeeCount).slice(0, 50),
-        bossGoal: bossGoal.trim().slice(0, 500),
-        contactPhone: contactPhone?.trim() || null,
-        contactName: contactName?.trim()?.slice(0, 50) || null,
-        status: 'pending',
-      },
-    })
+    const assessmentData = {
+      companyName: companyName.trim().slice(0, 100),
+      industry: String(industry).slice(0, 50),
+      mainBusiness: mainBusiness.trim().slice(0, 500),
+      revenue: String(revenue).slice(0, 50),
+      profit: String(profit).slice(0, 50),
+      employeeCount: String(employeeCount).slice(0, 50),
+      bossGoal: bossGoal.trim().slice(0, 500),
+      contactPhone: contactPhone?.trim() || null,
+      contactName: contactName?.trim()?.slice(0, 50) || null,
+      status: 'pending',
+    }
+
+    let assessment
+    try {
+      assessment = await prisma.assessment.create({
+        data: assessmentData,
+      })
+    } catch (dbError: any) {
+      const fallbackId = createFallbackId()
+      const createdAt = new Date()
+
+      console.error('数据库写入失败，已启用人工承接兜底:', dbError?.message || dbError)
+      console.info('人工承接线索:', {
+        id: fallbackId,
+        ...assessmentData,
+        createdAt: createdAt.toISOString(),
+      })
+
+      fireNotification(notifyNewAssessment({
+        id: fallbackId,
+        companyName: assessmentData.companyName,
+        industry: assessmentData.industry,
+        mainBusiness: assessmentData.mainBusiness,
+        revenue: assessmentData.revenue,
+        profit: assessmentData.profit,
+        employeeCount: assessmentData.employeeCount,
+        bossGoal: assessmentData.bossGoal,
+        contactName: assessmentData.contactName,
+        contactPhone: assessmentData.contactPhone,
+        createdAt,
+      }))
+
+      return NextResponse.json(
+        successResponse(
+          {
+            id: fallbackId,
+            status: 'manual_pending',
+            fallback: true,
+            createdAt,
+          },
+          '资料已收到，我们会尽快人工跟进'
+        )
+      )
+    }
 
     // 异步触发 AI 分析（不阻塞响应）
     // 前端通过轮询获取分析状态
