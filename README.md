@@ -1,4 +1,4 @@
-﻿# 企业资本合作初步评估 H5
+# 企业资本合作初步评估 H5
 
 这是一个面向客户的 H5 表单项目，用于收集企业并购、融资、股权出售、产业资源协同等合作需求，并生成初步评估结果。
 
@@ -67,6 +67,7 @@ cp .env.example .env.local
 
 ```bash
 DATABASE_URL="postgresql://admin:admin123@localhost:5432/ai_system?schema=public"
+DATABASE_POSTGRES_PRISMA_URL="postgresql://admin:admin123@localhost:5432/ai_system?schema=public"
 ```
 
 初始化数据库表：
