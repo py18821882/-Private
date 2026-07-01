@@ -2,11 +2,13 @@
 // POST /api/assessments  — 公开，H5 用户提交
 // GET  /api/assessments  — 需要管理员认证
 
-import { NextRequest, NextResponse } from 'next/server'
+import { after, NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { successResponse, errorResponse, validationError, unauthorizedError } from '@/lib/utils/response'
 import { generateReport } from '@/lib/report'
 import { notifyNewAssessment, fireNotification } from '@/lib/wecom/bot'
+
+export const maxDuration = 60
 
 // 手机号校验
 function isValidPhone(phone: string): boolean {
@@ -97,10 +99,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 异步触发 AI 分析（不阻塞响应）
-    // 前端通过轮询获取分析状态
-    generateReport(assessment.id).catch((error: any) => {
-      console.error('❌ AI 分析失败:', error.message)
+    after(async () => {
+      try {
+        await generateReport(assessment.id)
+      } catch (error: any) {
+        console.error('AI report generation failed:', error.message)
+      }
     })
 
     // 企业微信通知：新测评提交（fire-and-forget）
