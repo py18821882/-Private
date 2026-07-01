@@ -68,6 +68,7 @@ cp .env.example .env.local
 ```bash
 DATABASE_URL="postgresql://admin:admin123@localhost:5432/ai_system?schema=public"
 DATABASE_POSTGRES_PRISMA_URL="postgresql://admin:admin123@localhost:5432/ai_system?schema=public"
+DATABASE_POSTGRES_URL_NON_POOLING="postgresql://admin:admin123@localhost:5432/ai_system?schema=public"
 ```
 
 初始化数据库表：
