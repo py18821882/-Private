@@ -61,7 +61,19 @@ cp .env.example .env.local
 - `NEXT_PUBLIC_PAYMENT_QR_URL`
 - `APP_PASSWORD`
 
-注意：Vercel 生产环境不要使用 `file:./dev.db` 作为长期数据库。正式收集客户资料时，请配置 PostgreSQL 数据库；如果数据库暂未配置，系统会启用人工承接兜底，并把提交内容写入 Vercel 日志/企业微信通知。
+注意：项目已切换为 PostgreSQL。正式收集客户资料时，请在 Vercel 配置 PostgreSQL 连接串；如果数据库暂未连通，系统会启用人工承接兜底，并把提交内容写入 Vercel 日志/企业微信通知。
+
+本地 Docker 默认连接串：
+
+```bash
+DATABASE_URL="postgresql://admin:admin123@localhost:5432/ai_system?schema=public"
+```
+
+初始化数据库表：
+
+```bash
+npx prisma db push
+```
 
 ## Vercel 部署步骤
 

@@ -1,12 +1,12 @@
 // 数据库 Schema - AI 企业增长平台
-// 使用 SQLite，生产环境可切换为 PostgreSQL
+// 使用 PostgreSQL，适合本地 Docker、Linux 服务器和 Vercel 生产环境
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
