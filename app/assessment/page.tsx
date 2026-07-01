@@ -63,20 +63,18 @@ export default function AssessmentPage() {
 
     setLoading(true)
     try {
-      const response = await fetch('/api/assessments', {
+      const res = await fetch('/api/assessment/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       })
 
-      const result = await response.json()
+      const { assessment_id, error } = await res.json()
 
-      if (result.success && result.data?.fallback) {
-        router.push(`/assessment/submitted?ref=${encodeURIComponent(result.data.id)}`)
-      } else if (result.success) {
-        router.push(`/assessment/${result.data.id}`)
+      if (res.ok && assessment_id) {
+        router.push(`/report?id=${assessment_id}`)
       } else {
-        alert(result.message || '提交失败，请重试')
+        alert(error || '提交失败，请重试')
       }
     } catch (error) {
       alert('网络错误，请重试')
